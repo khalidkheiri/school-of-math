@@ -80,7 +80,7 @@ else:
 # Function to reshape and display Arabic text
 def reshaped_text(text):
     reshaped = arabic_reshaper.reshape(text)
-    return reshaped
+    return get_display(reshaped)
 
 countries["Response 3"] = [reshaped_text(text) for text in countries["Response 3"]]
 states["Response 3"] = [reshaped_text(text) for text in states["Response 3"]]

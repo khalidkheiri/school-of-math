@@ -1,0 +1,4 @@
+pandas
+matplotlib
+get_display
+arabic_reshaper

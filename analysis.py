@@ -16,7 +16,7 @@ states = df[df["Response 2"] == "داخل السودان"]["Response 3"].value_c
 
 
 #######################################################################################################################
-st.set_page_config(layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(layout="wide", initial_sidebar_state="expanded", menu_items=None)
 st.markdown(
 """
 <style>

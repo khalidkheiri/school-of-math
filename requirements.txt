@@ -1,4 +1,4 @@
 pandas
 matplotlib
-get_display
+python-bidi
 arabic_reshaper

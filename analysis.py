@@ -8,12 +8,6 @@ pd.options.display.max_rows = 9999
 pd.options.display.max_columns = 9999
 df = pd.read_excel("data.xlsx")
 
-levels = df["Level"].value_counts()
-
-countries = df[df["Response 2"] == "خارج السودان "]["Response 3"].value_counts().reset_index()
-states = df[df["Response 2"] == "داخل السودان"]["Response 3"].value_counts().reset_index()
-
-
 
 #######################################################################################################################
 st.set_page_config(layout="wide", initial_sidebar_state="expanded", menu_items=None)
@@ -32,20 +26,8 @@ div.st-emotion-cache-jkfxgf.e1nzilvr5 > p {
 
 with st.sidebar:
     st.header("Faculty of Mathematical Sciences and Informatics")
-
-st.title("Students Distribution")
-
-st.subheader(":blue[Levels]", divider="rainbow")
-
-col1, col2, col3, col4 = st.columns(4)
-col1.metric("Second", levels["Second"])
-col2.metric("Third", levels["Third"])
-col3.metric("Fourth", levels["Forth"])
-col4.metric("Fifth", levels["Fifth"])
-
-st.subheader(":blue[Locations of Students]", divider="rainbow")
-
-level_slider = st.select_slider(
+    st.write("---")
+    level_slider = st.radio(
     "Select the level of students",
     options=[
         "Second",
@@ -54,33 +36,43 @@ level_slider = st.select_slider(
         "Fifth",
         "ALL Levels"
     ],
-    value="ALL Levels",
-)
-
+    index=4,
+    )
+###########################################
 if level_slider == "Second":
     condition = df[df["Level"] == "Second"]
-    countries = condition[condition["Response 2"] == "خارج السودان "]["Response 3"].value_counts().reset_index()
-    states = condition[condition["Response 2"] == "داخل السودان"]["Response 3"].value_counts().reset_index()
 elif level_slider == "Third":
     condition = df[df["Level"] == "Third"]
-    countries = condition[condition["Response 2"] == "خارج السودان "]["Response 3"].value_counts().reset_index()
-    states = condition[condition["Response 2"] == "داخل السودان"]["Response 3"].value_counts().reset_index()
-elif level_slider == "Forth":
+elif level_slider == "Fourth":
     condition = df[df["Level"] == "Forth"]
-    countries = condition[condition["Response 2"] == "خارج السودان "]["Response 3"].value_counts().reset_index()
-    states = condition[condition["Response 2"] == "داخل السودان"]["Response 3"].value_counts().reset_index()
 elif level_slider == "Fifth":
     condition = df[df["Level"] == "Fifth"]
-    countries = condition[condition["Response 2"] == "خارج السودان "]["Response 3"].value_counts().reset_index()
-    states = condition[condition["Response 2"] == "داخل السودان"]["Response 3"].value_counts().reset_index()
 else:
-    countries = df[df["Response 2"] == "خارج السودان "]["Response 3"].value_counts().reset_index()
-    states = df[df["Response 2"] == "داخل السودان"]["Response 3"].value_counts().reset_index()
+    condition = df.copy()
+##########################################
+
+st.title("Students Distribution")
+
+#### Header 1
+st.subheader(":blue[Levels]", divider="rainbow")
+
+levels = df["Level"].value_counts()
+col1, col2, col3, col4 = st.columns(4)
+col1.metric("Second", levels["Second"])
+col2.metric("Third", levels["Third"])
+col3.metric("Fourth", levels["Forth"])
+col4.metric("Fifth", levels["Fifth"])
+
+#### Header 2
+st.subheader(":blue[Locations of Students]", divider="rainbow")
 
 # Function to reshape and display Arabic text
 def reshaped_text(text):
     reshaped = arabic_reshaper.reshape(text)
     return get_display(reshaped)
+
+countries = condition[condition["Response 2"] == "خارج السودان "]["Response 3"].value_counts().reset_index()
+states = condition[condition["Response 2"] == "داخل السودان"]["Response 3"].value_counts().reset_index()
 
 countries["Response 3"] = [reshaped_text(text) for text in countries["Response 3"]]
 states["Response 3"] = [reshaped_text(text) for text in states["Response 3"]]
@@ -118,5 +110,7 @@ ax2.set_ylabel(reshaped_text('داخل\nالسودان'), rotation=0, labelpad=3
 add_value_labels(ax1, bars1)
 add_value_labels(ax2, bars2)
 
-
 fig
+
+
+#### Header =3

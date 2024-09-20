@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
 from bidi.algorithm import get_display
 import arabic_reshaper
 
@@ -111,3 +112,70 @@ fig
 
 
 #### Header =3
+st.subheader(":blue[Final Exam Date Suggesion]", divider="rainbow")
+
+exam_date = condition["Response 4"].value_counts().reset_index()
+exam_date_sum = exam_date["count"].sum()
+exam_date["percent"] = exam_date["count"].apply(lambda x: round(x/exam_date_sum * 100, 1))
+
+col1, col2 = st.columns(2)
+col1.metric("Early Exam", exam_date.loc[0,"count"], f'{exam_date.loc[0,"percent"]}%', delta_color="off")
+col2.metric("Normal Date", exam_date.loc[1,"count"], f'{exam_date.loc[1,"percent"]}%', delta_color="off")
+
+
+# Example data
+date_suggession = condition[condition["Response 2"] == "خارج السودان "]
+suggesions = date_suggession.groupby(["Response 3", "Response 4"]).size().reset_index()
+suggesions.rename(columns={0:"count"}, inplace=True)
+
+grouped_data = suggesions.pivot(index='Response 3', columns='Response 4', values="count").fillna(0)
+
+grouped_data.rename(columns={
+    "أكمال الفصل الدراسي الثاني  بشكل عادي والإنتظار لدورة الإمتحانات التالية التي عادة ما تكون بعد ستة أشهر على الاقل من دورة منتصف إكتوبر":"Normal",
+    "تسريع الفصل الدراسي الثاني والإنتهاء منه في منتصف إكتوبر بدلا من نهايته , بحيث تبدأ إمتحانات الكلية في الاول من نوفمبر مما يتيح لك الجلوس للإمتحانات ":"Early Exam"
+}, inplace=True)
+
+
+# Create horizontal bars dynamically
+fig, ax = plt.subplots(figsize=(8, 5))
+
+grouped_data.index = grouped_data.index.map(reshaped_text)
+# Plot 'أكمال الفصل الدراسي' (No) bars on the left side if available
+if 'Normal' in grouped_data.columns:
+    normal_values = grouped_data['Normal'].copy()
+    normal_values[normal_values == 0] = 1  # Treat zero as -1 for plotting
+    bars_no = ax.barh(grouped_data.index, -normal_values, color='green', label='Normal')
+
+# Plot 'تسريع الفصل الدراسي' (Yes) bars on the right side if available
+if 'Early Exam' in grouped_data.columns:
+    bars_yes = ax.barh(grouped_data.index, grouped_data['Early Exam'], color='red', label='Early Exam')
+
+if 'Normal' in grouped_data.columns:
+    labels_no = [f'{abs(int(label))}' for label in grouped_data['Normal']]
+    ax.bar_label(bars_no, labels=labels_no, label_type='edge', padding=5, fontsize=10)
+
+if 'Early Exam' in grouped_data.columns:
+    labels_yes = [f'{int(label)}' for label in grouped_data['Early Exam']]
+    ax.bar_label(bars_yes, labels=labels_yes, label_type='edge', padding=5, fontsize=10)
+
+# Draw a vertical line at x=0
+ax.axvline(x=0, color='black', linewidth=1)
+
+# Remove x-axis ticks
+ax.set_xticks([])
+
+ax.set_xlim(-130, 130)
+
+# Set title text
+title_normal = ax.text(-90, ax.get_ylim()[1] * 1.02, 'Normal', 
+                       fontsize=14, fontweight='bold', color='green')
+
+title_exam = ax.text(50, ax.get_ylim()[1] * 1.02, 'Early Exam', 
+                     fontsize=14, fontweight='bold', color='red')
+
+# Adjust the axes to provide space for the title
+plt.subplots_adjust(top=0.85)
+
+
+# Show plot
+fig

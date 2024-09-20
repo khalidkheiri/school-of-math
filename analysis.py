@@ -17,9 +17,6 @@ st.markdown(
 div.st-emotion-cache-jkfxgf.e1nzilvr5 > p {
     font-size: 18px;
 }
-.st-bc.st-b9.st-bd {
-    width: 200px; /* Adjust the width as needed */
-}
 </style>
 """, unsafe_allow_html=True
 )
